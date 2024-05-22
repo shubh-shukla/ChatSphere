@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500&display=swap');
+
+body{
+  font-family: 'Archivo', sans-serif;
+  height: 100vh;
+  /* position: fixed; */
+}
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+#root{
+  height: 100%;
+  overflow: hidden;
+}
