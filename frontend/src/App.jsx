@@ -13,6 +13,9 @@ import { Toaster } from "react-hot-toast";
 import VerifyEmail from "./pages/VerifyEmail";
 import { AuthProvider, useAuth } from "./context/authContext";
 import axios from "axios";
+import ChatHome from "./pages/ChatHome";
+import { ProfileProvider } from "./context/profileContext";
+import Profile from "./components/Profile";
 import { baseUrl } from "../apiConfig";
 
 const Layout = () => {
@@ -52,11 +55,11 @@ const router = createBrowserRouter([
       },
       {
         path: "chathome",
-        element: <div>To be implemented</div>,
+        element: <ChatHome />,
       },
       {
         path: "profile",
-        element: <div>To be implemented</div>,
+        element: <Profile />,
       },
     ],
   },
@@ -69,8 +72,10 @@ function App() {
   return (
     <>
       <AuthProvider>
-        <RouterProvider router={router} />
-        <Toaster />
+        <ProfileProvider>
+          <RouterProvider router={router} />
+          <Toaster />
+        </ProfileProvider>
       </AuthProvider>
     </>
   );
