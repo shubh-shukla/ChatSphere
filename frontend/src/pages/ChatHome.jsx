@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { useProfile } from "../context/profileContext";
 import axios from "axios";
+import ChatMessages from "../components/Chat/ChatMessages";
+import MessageInputForm from "../components/Chat/MessageInputForm";
 import Nav from "../components/Chat/Nav";
 import OnlineUsersList from "../components/Chat/OnlineUserList";
 import TopBar from "../components/Chat/TopBar";
@@ -168,6 +170,19 @@ const ChatHome = () => {
             onlinePeople={onlinePeople}
           />
         )}
+        <ChatMessages
+          messages={messages}
+          userDetails={userDetails}
+          selectedUserId={selectedUserId}
+        />
+        <div className="absolute w-full bottom-0 flex justify-center items-center">
+          <MessageInputForm
+            newMessage={newMessage}
+            setNewMessage={setNewMessage}
+            sendMessage={sendMessage}
+            selectedUserId={selectedUserId}
+          />
+        </div>
       </section>
     </div>
   );
