@@ -1,11 +1,17 @@
-const mongoose = require('mongoose')
+import mongoose from "mongoose";
 
-module.exports = async () => {
+import insertDefaultAvatars from "../utils/defaultAvatars.js";
+
+const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.DB);
-    console.log("DB CONNECTED SUCCESSFULLY")
+    const connectionInstance = await mongoose.connect(`${process.env.MONGODB_URI}/${process.env.DB_NAME}`);
+    console.log("MongoDB connected !! DB Host :", connectionInstance.connection.host);
+
+    await insertDefaultAvatars();
   } catch (error) {
-    console.log(error)
-    console.log("COULD NOT CONNECT TO DB")
+    console.error("MongoDB connection failed", error);
+    process.exit(1);
   }
-}
+};
+
+export default connectDB;
