@@ -46,10 +46,6 @@ const corsOptions = {
 // app.use(cors(corsOptions)); //for dev
 app.use(cors());	//for production
 
-app.get("/", (req, res) => {
-	res.send("Hello !!!");
-});
-
 app.use("/api/user", userRoute);
 app.use("/api/avatar", avatarRoute);
 // console.log(process.env.SMTP_USER);
