@@ -43,8 +43,12 @@ const corsOptions = {
 	optionsSuccessStatus: 204,
 	credentials: true, // Allow credentials like cookies
 };
-app.use(cors(corsOptions)); //for dev
-// app.use(cors());	//for production
+// app.use(cors(corsOptions)); //for dev
+app.use(cors());	//for production
+
+app.get("/", (req, res) => {
+	res.send("Hello !!!");
+});
 
 app.use("/api/user", userRoute);
 app.use("/api/avatar", avatarRoute);
