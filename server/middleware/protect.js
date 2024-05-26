@@ -1,4 +1,4 @@
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
 
 async function protect(req) {
   return new Promise((resolve, reject) => {
@@ -17,4 +17,4 @@ async function protect(req) {
   });
 }
 
-module.exports = protect;
+export default protect;

@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const AvatarSchema = new mongoose.Schema(
   {
@@ -11,6 +11,4 @@ const AvatarSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Avatar = mongoose.model("Avatar", AvatarSchema);
-
-module.exports = Avatar;
+export const Avatar = mongoose.model("Avatar", AvatarSchema);

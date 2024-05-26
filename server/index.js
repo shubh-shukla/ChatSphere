@@ -1,16 +1,24 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
+import dotenv from "dotenv";
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import path from "path";
+
+import connectDB from "./db/db.js";
+import userRoute from "./routes/userRoute.js";
+import avatarRoute from "./routes/avatarRoute.js";
+import createWebSocketServer from "./wsServer.js";
+
+const __dirname = path.resolve();
+
 const app = express();
-const connection = require("./db/db.js");
-const userRoute = require("./routes/userRoute.js");
-const avatarRoute = require("./routes/avatarRoute.js");
-const cookieParser = require('cookie-parser')
-const createWebSocketServer = require("./wsServer.js");
-const path = require("path");
+
+dotenv.config({
+  path: `./.env`,
+});
 
 //database connection
-connection();
+connectDB();
 app.use(express.json())
 app.use(cookieParser())
 

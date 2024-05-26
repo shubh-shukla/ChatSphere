@@ -1,5 +1,5 @@
-const protect = require("../middleware/protect");
-const Message = require("../models/messageModel");
+import protect from "../middleware/protect.js";
+import { Message } from "../models/messageModel.js";
 
 const messageController = async (req, res) => {
   const { userId } = req.params;
@@ -19,4 +19,4 @@ const messageController = async (req, res) => {
   console.log("messages", messages);
 };
 
-module.exports = messageController;
+export { messageController };

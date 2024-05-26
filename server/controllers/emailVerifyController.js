@@ -1,5 +1,6 @@
-const { User } = require("../models/userModel.js");
-const { Token } = require("../models/tokenModel.js");
+import { User } from "../models/userModel.js"
+import { Token } from "../models/tokenModel.js"
+
 const verifyEmail = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -38,4 +39,4 @@ const verifyEmail = async (req, res) => {
   }
 };
 
-module.exports = verifyEmail;
+export { verifyEmail };

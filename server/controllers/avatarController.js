@@ -1,5 +1,4 @@
-const jwt = require("jsonwebtoken");
-const Avatar = require("../models/avatars");
+import { Avatar } from "../models/avatars.js";
 
 async function avatarController(req, res) {
   // Assuming you want to extract the link from the request body
@@ -40,4 +39,4 @@ async function getAllAvatars(req, res) {
   }
 }
 
-module.exports = { avatarController, getAllAvatars };
+export { avatarController, getAllAvatars };

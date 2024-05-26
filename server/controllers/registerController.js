@@ -1,8 +1,8 @@
-const bcrypt = require("bcrypt");
-const { User, validateRegister } = require("../models/userModel.js");
-const { Token } = require("../models/tokenModel.js");
-const sendEmail = require("../utils/sendEmail.js");
-const crypto = require("crypto");
+import bcrypt from "bcrypt";
+import { User, validateRegister } from "../models/userModel.js";
+import { Token } from "../models/tokenModel.js";
+import sendEmail from "../utils/sendEmail.js";
+import crypto from "crypto";
 
 const registerController = async (req, res) => {
   try {
@@ -55,4 +55,4 @@ const registerController = async (req, res) => {
   }
 };
 
-module.exports = registerController;
+export { registerController };

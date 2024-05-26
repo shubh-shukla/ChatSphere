@@ -1,5 +1,5 @@
-const jwt = require("jsonwebtoken");
-const { User } = require("../models/userModel");
+import jwt from "jsonwebtoken";
+import { User } from "../models/userModel.js";
 
 const profileController = async (req, res) => {
   const token = req.cookies?.authToken;
@@ -41,4 +41,4 @@ const profileUpdate = async (req, res) => {
   res.json(user);
 };
 
-module.exports = { profileController, profileUpdate };
+export { profileController, profileUpdate };

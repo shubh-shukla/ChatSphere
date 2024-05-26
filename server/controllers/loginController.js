@@ -1,5 +1,5 @@
-const bcrypt = require("bcrypt");
-const { User, validateLogin } = require("../models/userModel.js");
+import bcrypt from "bcrypt";
+import { User, validateLogin } from "../models/userModel.js";
 
 const loginController = async (req, res) => {
   try {
@@ -48,4 +48,4 @@ const loginController = async (req, res) => {
   }
 };
 
-module.exports = loginController;
+export { loginController };

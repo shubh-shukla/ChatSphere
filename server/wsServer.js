@@ -1,12 +1,10 @@
-const ws = require("ws");
-const jwt = require("jsonwebtoken");
-const fs = require("fs");
-const Message = require("./models/messageModel");
-const { clear } = require("console");
-const { User } = require("./models/userModel");
+import WebSocket, { WebSocketServer } from 'ws';
+import jwt from "jsonwebtoken";
+import { Message } from "./models/messageModel.js";
+import { User } from "./models/userModel.js";
 
 const createWebSocketServer = (server) => {
-  const wss = new ws.WebSocketServer({ server });
+  const wss = new WebSocketServer({ server });
 
   wss.on("connection", (connection, req) => {
     const notifyAboutOnlinePeople = async () => {
@@ -109,4 +107,4 @@ const createWebSocketServer = (server) => {
   });
 };
 
-module.exports = createWebSocketServer;
+export default createWebSocketServer;
