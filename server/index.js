@@ -27,7 +27,7 @@ app.use(express.json());
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:4000",
-	"https://chatsphere.vercel.app",
+	"https://mychatsphere.vercel.app",
 ];
 
 
