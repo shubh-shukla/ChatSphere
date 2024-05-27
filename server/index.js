@@ -27,7 +27,7 @@ app.use(express.json());
 const allowedOrigins = [
   // "http://localhost:5173",
   // "http://localhost:4000",
-	"https://mychatsphere.vercel.app",
+	"https://my-chatsphere.vercel.app",
 ];
 
 
@@ -57,10 +57,9 @@ createWebSocketServer(server);
 app.use(express.static(path.join(__dirname, "..", "frontend", "dist")));
 
 app.get('/*', (req, res) => {
-	res.status(404).send('Page not found');
-	// res.sendFile(path.join(__dirname, '../frontend/dist/index.html'), (err) => {
-	// 	if (err) {
-	// 		console.error('Error sending file:', err);
-	// 	}
-	// });
+	res.sendFile(path.join(__dirname, '../frontend/dist/index.html'), (err) => {
+		if (err) {
+			console.error('Error sending file:', err);
+		}
+	});
 });
