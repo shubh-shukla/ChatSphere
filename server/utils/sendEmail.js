@@ -12,7 +12,6 @@ const sendEmail = async (email, subject, verificationUrl) => {
         pass: process.env.SMTP_PASS,
       },
     });
-    console.log(process.env.SMTP_EMAIL, ' to ', email);
     await transporter.sendMail({
       from: `${process.env.EMAIL_FROM_NAME} <${process.env.SMTP_EMAIL}>`,
       to: email,
