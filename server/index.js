@@ -54,12 +54,12 @@ const port = process.env.PORT || 8000;
 const server = app.listen(port, () => console.log(`Application Running on Port ${port}`));
 
 createWebSocketServer(server); 
-app.use(express.static(path.join(__dirname, "..", "frontend", "dist")));
+// app.use(express.static(path.join(__dirname, "..", "frontend", "dist")));
 
-app.get('/*', (req, res) => {
-	res.sendFile(path.join(__dirname, '../frontend/dist/index.html'), (err) => {
-		if (err) {
-			console.error('Error sending file:', err);
-		}
-	});
-});
+// app.get('/*', (req, res) => {
+// 	res.sendFile(path.join(__dirname, '../frontend/dist/index.html'), (err) => {
+// 		if (err) {
+// 			console.error('Error sending file:', err);
+// 		}
+// 	});
+// });
