@@ -5,10 +5,10 @@ import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from 'url';
 
-import connectDB from "./api/db/db.js";
-import userRoute from "./api/routes/userRoute.js";
-import avatarRoute from "./api/routes/avatarRoute.js";
-import createWebSocketServer from "./api/wsServer.js";
+import connectDB from "./server/db/db.js";
+import userRoute from "./server/routes/userRoute.js";
+import avatarRoute from "./server/routes/avatarRoute.js";
+import createWebSocketServer from "./server/wsServer.js";
 
 const app = express();
 
