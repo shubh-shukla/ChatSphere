@@ -47,9 +47,6 @@ app.use(cors(corsOptions)); //for dev
 
 app.use("/api/user", userRoute);
 app.use("/api/avatar", avatarRoute);
-app.get("/test", (req, res) => {
-	res.send("Hello World!");
-})
 
 const port = process.env.PORT || 8000;
 const server = app.listen(port, () => console.log(`Application Running on Port ${port}`));
@@ -60,5 +57,3 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use(express.static(path.join(__dirname, 'dist')))
 app.get("/", (req, res, next) => {res.sendFile(path.join(__dirname, 'dist', 'index.html'));});
-app.use("/api/usertest", userRoute);
-app.use("/api/avatartest", avatarRoute);
