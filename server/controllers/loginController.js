@@ -31,13 +31,15 @@ const loginController = async (req, res) => {
     }
 
     // Generate authentication token and send successful login response
+
+    console.log('setting cookie domain');
     const token = user.generateAuthToken();
     res
       .status(200)
       .cookie("authToken", token, {
         httpOnly: false,
         sameSite: "none",
-        domain: "my-chatsphere.vercel.app",
+        domain: 'my-chatsphere.vercel.app',
         secure: true,
         expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       })
