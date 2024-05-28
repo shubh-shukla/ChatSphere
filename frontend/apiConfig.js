@@ -2,8 +2,8 @@
 let baseUrl;
 let socketUrl;
 
-baseUrl = "https://my-chatsphere.vercel.app";
-socketUrl = "wss://my-chatsphere.vercel.app";
+baseUrl = "https://my-chat-sphere.vercel.app";
+socketUrl = "wss://my-chat-sphere.vercel.app";
 
 // if (import.meta.env.VITE_NODE_ENV === "production") {
 //   baseUrl = "https://my-chatsphere.vercel.app";
