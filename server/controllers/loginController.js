@@ -36,7 +36,8 @@ const loginController = async (req, res) => {
       .status(200)
       .cookie("authToken", token, {
         httpOnly: false,
-        // sameSite: "none",
+        sameSite: "none",
+        domain: "my-chatsphere.vercel.app",
         secure: true,
         expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       })
