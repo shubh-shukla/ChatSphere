@@ -9,8 +9,9 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(value);
   };
   const checkAuth = () => {
+    console.log("All cookies:", Cookies.get());
     const token = Cookies.get("authToken");
-    console.log("Checking authentication...");
+    console.log("Checking authentication...", token);
     if (token) {
       console.log("Token exists. Setting authenticated to true.");
       setAuthenticated(true);

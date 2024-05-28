@@ -16,7 +16,7 @@ import axios from "axios";
 import ChatHome from "./pages/ChatHome";
 import { ProfileProvider } from "./context/profileContext";
 import Profile from "./components/Profile";
-import { baseUrl } from "./apiConfig";
+import { baseUrl } from "../apiConfig";
 
 const Layout = () => {
   const { isAuthenticated, checkAuth } = useAuth();
