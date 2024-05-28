@@ -3,13 +3,12 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import path from "path";
+import { fileURLToPath } from 'url';
 
-import connectDB from "./db/db.js";
-import userRoute from "./routes/userRoute.js";
-import avatarRoute from "./routes/avatarRoute.js";
-import createWebSocketServer from "./wsServer.js";
-
-const __dirname = path.resolve();
+import connectDB from "./api/db/db.js";
+import userRoute from "./api/routes/userRoute.js";
+import avatarRoute from "./api/routes/avatarRoute.js";
+import createWebSocketServer from "./api/wsServer.js";
 
 const app = express();
 
@@ -25,9 +24,9 @@ app.use(cookieParser())
 //middlewares
 app.use(express.json());
 const allowedOrigins = [
-  // "http://localhost:5173",
+  "http://localhost:5173",
   // "http://localhost:4000",
-	"https://my-chatsphere.vercel.app",
+	"https://my-chat-sphere.vercel.app",
 ];
 
 
@@ -43,23 +42,18 @@ const corsOptions = {
 	optionsSuccessStatus: 204,
 	credentials: true, // Allow credentials like cookies
 };
-// app.use(cors(corsOptions)); //for dev
-app.use(cors());	//for production
+app.use(cors(corsOptions)); //for dev
+// app.use(cors());	//for production
 
 app.use("/api/user", userRoute);
 app.use("/api/avatar", avatarRoute);
-// console.log(process.env.SMTP_USER);
-// console.log(process.env.SMTP_PASS);
+
 const port = process.env.PORT || 8000;
 const server = app.listen(port, () => console.log(`Application Running on Port ${port}`));
 
 createWebSocketServer(server); 
-// app.use(express.static(path.join(__dirname, "..", "frontend", "dist")));
 
-// app.get('/*', (req, res) => {
-// 	res.sendFile(path.join(__dirname, '../frontend/dist/index.html'), (err) => {
-// 		if (err) {
-// 			console.error('Error sending file:', err);
-// 		}
-// 	});
-// });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use(express.static(path.join(__dirname, 'dist')))
+app.get("/", (req, res, next) => {res.sendFile(path.join(__dirname, 'dist', 'index.html'));});

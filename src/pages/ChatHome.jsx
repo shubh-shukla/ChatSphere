@@ -7,7 +7,7 @@ import MessageInputForm from "../components/Chat/MessageInputForm";
 import Nav from "../components/Chat/Nav";
 import OnlineUsersList from "../components/Chat/OnlineUserList";
 import TopBar from "../components/Chat/TopBar";
-import { socketUrl } from "../../apiConfig";
+import { socketUrl } from "../apiConfig";
 import { useAuth } from "../context/authContext";
 import { useNavigate } from "react-router-dom";
 

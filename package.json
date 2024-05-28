@@ -1,0 +1,53 @@
+{
+  "name": "chatsphere",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "description": "ChatSphere",
+  "author": "Shubham Shukla",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview",
+    "deploy": "set +v ; npm run build ; vercel --prod ; echo [...Deployment Successful...] || @echo off && npm run build && vercel --prod &&  echo [...Deployment Successful...] || stty -echo && npm run build && vercel --prod &&  echo [...Deployment Successful...]"
+  },
+  "dependencies": {
+    "@react-three/fiber": "^8.15.12",
+    "axios": "^1.6.2",
+    "js-cookie": "^3.0.5",
+    "lodash": "^4.17.21",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.4.1",
+    "react-router-dom": "^6.19.0",
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "joi": "^17.11.0",
+    "joi-password-complexity": "^5.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.0.1",
+    "nodemailer": "^6.9.7",
+    "nodemon": "^3.0.1",
+    "path": "^0.12.7",
+    "ws": "^8.16.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@vitejs/plugin-react": "^4.0.3",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.45.0",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.3",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.3.5",
+    "vite": "^4.4.5"
+  }
+}
