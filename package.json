@@ -8,14 +8,14 @@
     "node": "18.x"
   },
   "scripts": {
-    "build": "cd frontend && npm install && npm run build && cp -r dist ../dist",
-    "start": "netlify dev"
+    "start": "node backend/index.js",
+    "server": "nodemon backend/index.js",
+    "build": "npm install --legacy-peer-deps && npm install --legacy-peer-deps --prefix frontend && npm run build --prefix frontend"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@netlify/functions": "^2.7.0",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -28,10 +28,6 @@
     "nodemailer": "^6.9.7",
     "nodemon": "^3.0.1",
     "path": "^0.12.7",
-    "serverless-http": "^3.2.0",
     "ws": "^8.16.0"
-  },
-  "devDependencies": {
-    "netlify-cli": "^3.29.14"
   }
 }
