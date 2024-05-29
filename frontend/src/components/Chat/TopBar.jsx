@@ -33,7 +33,7 @@ const TopBar = ({
             </>
           ) : (
             <>
-              <span>{offlinePeople[selectedUserId].firstName}</span>
+              <span>{offlinePeople[selectedUserId]?.firstName}</span>
 
               <span className="h-3 rounded-full aspect-square bg-gray-400"></span>
             </>
