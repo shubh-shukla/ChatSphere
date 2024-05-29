@@ -25,7 +25,7 @@ app.use(express.json());
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:4000",
-	"https://my-chat-sphere.onrender.app",
+	"https://chatsphere-a821.onrender.com",
 ];
 
 
