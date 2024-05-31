@@ -18,7 +18,6 @@ const Contact = ({
       } capitalize py-2 lg:py-3 px-2 lg:px-5  rounded-[0.5rem]  border-gray-300 hover:bg-[#1d3072] flex flex-col lg:flex-row items-center gap-1 my-1.5 lg:gap-4 font-medium hover:cursor-pointer lg:my-3 text-white `}
       onClick={() => {
         setSelectedUserId(userId);
-        console.log(userId);
       }}
     >
       <Avatar

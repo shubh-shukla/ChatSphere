@@ -52,7 +52,6 @@ const OnlineUsersList = ({
       <div className="max-h-[85vh] overflow-auto no-scrollbar">
         {filteredOnlinePeople.map((userId) => {
           const { username, avatarLink } = onlinePeople[userId];
-          console.log(userId)
           return (
             <Contact
               key={userId}

@@ -24,7 +24,6 @@ const Profile = () => {
       });
 
       // Handle successful response (you may want to update state or show a success message)
-      // console.log(response.data);
     } catch (error) {
       // Handle error (you may want to show an error message)
       console.error(error);

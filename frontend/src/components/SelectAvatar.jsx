@@ -2,13 +2,11 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 const SelectAvatar = ({ setSelectedLink, selectedLink }) => {
-  // console.log(selectedLink)
   const [avatars, setAvatars] = useState([]);
   useEffect(() => {
     const fetchAvatars = async () => {
       try {
         const response = await axios.get("/api/avatar/all");
-        console.log(response.data.avatars);
         setAvatars(response.data.avatars);
       } catch (error) {
         console.error("Error fetching avatars:", error);
