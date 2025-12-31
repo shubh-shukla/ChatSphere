@@ -47,9 +47,11 @@ app.use(cors(corsOptions)); //for dev
 app.use("/api/user", userRoute);
 app.use("/api/avatar", avatarRoute);
 
-
-
-const __dirname1 = path.resolve();
+// Backward compatibility for old email links without /api prefix
+app.get("/users/:id/verify/:token", (req, res) => {
+	const { id, token } = req.params;
+	return res.redirect(`/api/user/${id}/verify/${token}`);
+});
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname1, "/frontend/dist")));

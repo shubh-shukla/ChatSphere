@@ -41,7 +41,10 @@ const registerController = async (req, res) => {
       expiresAt: Date.now() + 3600000,
     }).save();
 
-    const url = `${process.env.BASE_URL}/users/${user._id}/verify/${token.token}`;
+    // Allow overriding the base used in emails; fall back to BASE_URL
+    const verifyBase = process.env.EMAIL_VERIFY_BASE_URL || process.env.BASE_URL;
+    // Send verification link to the API endpoint
+    const url = `${verifyBase}/api/user/${user._id}/verify/${token.token}`;
     await sendEmail(user.email, "Verify Email", url);
 
     user.verificationLinkSent = true;

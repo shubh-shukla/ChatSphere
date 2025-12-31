@@ -12,7 +12,9 @@ export default function Avatar({ username, userId, isOnline, avatarLink }) {
     "#4299E1",
   ];
 
-  const userIdBase10 = parseInt(userId.substring(10), 16);
+  // Fall back safely if userId is missing/short
+  const idSegment = typeof userId === "string" && userId.length > 10 ? userId.substring(10) : "0";
+  const userIdBase10 = parseInt(idSegment, 16) || 0;
   const colorIndex = userIdBase10 % colors.length;
   const color = colors[colorIndex];
 
@@ -30,10 +32,10 @@ export default function Avatar({ username, userId, isOnline, avatarLink }) {
           <img
             src={avatarLink}
             className="h-10 grid place-content-center"
-            alt={username[0]}
+            alt={username?.[0] || "avatar"}
           />
         ) : (
-          <span>{username[0]}</span>
+          <span>{username?.[0] || "?"}</span>
         )}
       </div>
       
