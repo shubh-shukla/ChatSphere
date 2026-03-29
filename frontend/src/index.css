@@ -2,3 +2,106 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===== Light Theme (default) ===== */
+:root {
+  --color-dark: 230 232 240;
+  --color-background: 240 241 247;
+  --color-surface: 255 255 255;
+  --color-surface-light: 243 244 250;
+  --color-surface-hover: 235 236 244;
+  --color-border: 200 202 218;
+  --color-border-light: 180 183 204;
+
+  --color-primary: 124 58 237;
+  --color-primary-hover: 109 40 217;
+  --color-primary-light: 139 92 246;
+  --color-accent: 16 185 129;
+  --color-danger: 239 68 68;
+  --color-warning: 245 158 11;
+
+  --color-text-primary: 15 23 42;
+  --color-text-secondary: 55 65 88;
+  --color-text-muted: 120 128 155;
+
+  /* RGBA colors */
+  --color-primary-muted: rgba(124, 58, 237, 0.08);
+  --color-accent-muted: rgba(16, 185, 129, 0.08);
+  --color-danger-muted: rgba(239, 68, 68, 0.08);
+
+  /* Glass */
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(0, 0, 0, 0.06);
+  --glass-strong-bg: rgba(255, 255, 255, 0.92);
+  --glass-strong-border: rgba(0, 0, 0, 0.08);
+
+  /* Scrollbar */
+  --scrollbar-thumb: #b8bace;
+  --scrollbar-thumb-hover: #9a9db6;
+
+  /* Shadows */
+  --shadow-glow: rgba(124, 58, 237, 0.2);
+  --shadow-glow-accent: rgba(16, 185, 129, 0.2);
+  --shadow-card: 0 1px 4px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-float: 0 4px 20px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.08);
+  --shadow-elevated: 0 4px 12px rgba(0, 0, 0, 0.1), 0 12px 32px rgba(0, 0, 0, 0.12);
+  --shadow-panel: 4px 0 16px rgba(0, 0, 0, 0.08), 1px 0 4px rgba(0, 0, 0, 0.05);
+
+  /* Misc */
+  --orb-opacity: 0.06;
+  --gradient-text-from: #7c3aed;
+  --gradient-text-to: #10b981;
+
+  /* Chat-specific */
+  --msg-own-bg: linear-gradient(135deg, #7c3aed, #6d28d9);
+  --msg-other-bg: rgba(255, 255, 255, 1);
+  --chat-pattern-opacity: 0.03;
+}
+
+/* ===== Dark Theme ===== */
+.dark {
+  --color-dark: 10 10 18;
+  --color-background: 16 16 27;
+  --color-surface: 24 24 40;
+  --color-surface-light: 32 32 52;
+  --color-surface-hover: 40 40 62;
+  --color-border: 42 42 64;
+  --color-border-light: 56 56 80;
+
+  --color-primary: 139 92 246;
+  --color-primary-hover: 124 58 237;
+  --color-primary-light: 167 139 250;
+  --color-accent: 52 211 153;
+  --color-danger: 248 113 113;
+  --color-warning: 251 191 36;
+
+  --color-text-primary: 248 250 252;
+  --color-text-secondary: 186 190 210;
+  --color-text-muted: 100 106 130;
+
+  --color-primary-muted: rgba(139, 92, 246, 0.12);
+  --color-accent-muted: rgba(52, 211, 153, 0.12);
+  --color-danger-muted: rgba(248, 113, 113, 0.12);
+
+  --glass-bg: rgba(22, 22, 38, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.05);
+  --glass-strong-bg: rgba(22, 22, 38, 0.9);
+  --glass-strong-border: rgba(255, 255, 255, 0.07);
+
+  --scrollbar-thumb: #2e2e48;
+  --scrollbar-thumb-hover: #3e3e58;
+
+  --shadow-glow: rgba(139, 92, 246, 0.25);
+  --shadow-glow-accent: rgba(52, 211, 153, 0.2);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-float: 0 4px 16px rgba(0, 0, 0, 0.3), 0 1px 4px rgba(0, 0, 0, 0.2);
+  --shadow-elevated: 0 2px 6px rgba(0, 0, 0, 0.25), 0 8px 24px rgba(0, 0, 0, 0.3);
+  --shadow-panel: 4px 0 20px rgba(0, 0, 0, 0.25), 1px 0 6px rgba(0, 0, 0, 0.15);
+
+  --orb-opacity: 0.1;
+  --gradient-text-from: #8b5cf6;
+  --gradient-text-to: #34d399;
+
+  --msg-own-bg: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  --msg-other-bg: rgba(32, 32, 52, 1);
+  --chat-pattern-opacity: 0.03;
+}
