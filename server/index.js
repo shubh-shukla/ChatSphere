@@ -24,14 +24,12 @@ app.use(cookieParser())
 
 //middlewares
 // app.use(express.json());
-const allowedOrigins = [
-  // "http://localhost:5173",
-  // "http://localhost:4000",
-	"https://my-chatsphere.vercel.app",
-];
+const allowedOrigins = process.env.CORS_ORIGIN === "*"
+	? "*"
+	: (process.env.CORS_ORIGIN || "http://localhost:5173").split(",");
 
 const corsOptions = {
-	origin: (origin, callback) => {
+	origin: allowedOrigins === "*" ? true : (origin, callback) => {
 		if (allowedOrigins.includes(origin) || !origin) {
 			callback(null, true);
 		} else {
@@ -40,7 +38,7 @@ const corsOptions = {
 	},
 	methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
 	optionsSuccessStatus: 204,
-	credentials: true, // Allow credentials like cookies
+	credentials: true,
 };
 app.use(cors(corsOptions)); //for dev
 // app.use(cors());	//for production
