@@ -7,6 +7,10 @@ export const ProfileProvider = ({ children }) => {
   const { isAuthenticated } = useAuth();
   const [userDetails, setUserDetails] = useState(null);
   useEffect(() => {
+    if (!isAuthenticated) {
+      setUserDetails(null);
+      return;
+    }
     const fetchUserDetails = async () => {
       try {
         const response = await axios.get(
