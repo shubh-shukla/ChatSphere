@@ -34,15 +34,19 @@ const loginController = async (req, res) => {
 
     console.log('setting cookie domain');
     const token = user.generateAuthToken();
+    const isProduction = process.env.NODE_ENV === 'production';
+    const cookieOptions = {
+      httpOnly: false,
+      sameSite: isProduction ? 'none' : 'lax',
+      secure: isProduction,
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    };
+    if (isProduction) {
+      cookieOptions.domain = 'my-chatsphere.vercel.app';
+    }
     res
       .status(200)
-      .cookie("authToken", token, {
-        httpOnly: false,
-        sameSite: "none",
-        domain: 'my-chatsphere.vercel.app',
-        secure: true,
-        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      })
+      .cookie("authToken", token, cookieOptions)
       .send({ message: "Login successful", status: 200 });
     return;
   } catch (error) {

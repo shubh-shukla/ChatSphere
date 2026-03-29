@@ -2,21 +2,30 @@ import protect from "../middleware/protect.js";
 import { Message } from "../models/messageModel.js";
 
 const messageController = async (req, res) => {
-  const { userId } = req.params;
-  const userData = await protect(req);
-  console.log("userData", userData);
+  try {
+    const { userId } = req.params;
 
-  const ourUserId = userData._id;
-  console.log("ourUserId", ourUserId);
-  console.log("userId", userId);
+    if (!userId || userId === 'undefined') {
+      return res.status(400).json({ message: "Valid userId is required" });
+    }
 
-  const messages = await Message.find({
-    sender: { $in: [userId, ourUserId] },
-    recipient: { $in: [userId, ourUserId] },
-  }).sort({ createdAt: 1 });
+    const userData = await protect(req);
+    if (!userData) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
-  res.json(messages);
-  console.log("messages", messages);
+    const ourUserId = userData._id;
+
+    const messages = await Message.find({
+      sender: { $in: [userId, ourUserId] },
+      recipient: { $in: [userId, ourUserId] },
+    }).sort({ createdAt: 1 });
+
+    res.json(messages);
+  } catch (error) {
+    console.error("Error in messageController:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 };
 
 export { messageController };

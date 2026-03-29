@@ -1,44 +1,50 @@
 import jwt from "jsonwebtoken";
 import { User } from "../models/userModel.js";
 
-const profileController = async (req, res) => {
-  const token = req.cookies?.authToken;
-  // console.log(token);
-  if (token) {
-    jwt.verify(token, process.env.JWTPRIVATEKEY, {}, async (err, userData) => {
-      console.log(userData);
-      if (err) throw err;
-      // res.json(userData);
-      // console.log(userData);
-      const user = await User.findOne({ _id: userData._id });
-      res.json(user);
+const verifyToken = (req) => {
+  return new Promise((resolve, reject) => {
+    const token = req.cookies?.authToken;
+    if (!token) return reject(new Error("No token"));
+    jwt.verify(token, process.env.JWTPRIVATEKEY, {}, (err, userData) => {
+      if (err) return reject(err);
+      resolve(userData);
     });
-  } else {
-    res.status(401).json("no token");
+  });
+};
+
+const profileController = async (req, res) => {
+  try {
+    const userData = await verifyToken(req);
+    const user = await User.findById(userData._id).select("-password");
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json(user);
+  } catch (error) {
+    console.error("Error in profileController:", error.message);
+    res.status(401).json({ message: "Unauthorized" });
   }
 };
 
 const profileUpdate = async (req, res) => {
-  const token = req.cookies?.authToken;
-  if (token) {
-    jwt.verify(token, process.env.JWTPRIVATEKEY, {}, (err, userData) => {
-      if (err) throw err;
-    });
-  } else {
-    res.status(401).json("no token");
-  }
+  try {
+    const userData = await verifyToken(req);
+    const { firstName, lastName, avatarLink } = req.body;
 
-  const { firstName, lastName, email, avatarLink } = req.body;
-  const user = await User.findOne({ email });
+    // Only allow updating own profile
+    const user = await User.findById(userData._id);
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-  if (user) {
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.email = email;
-    user.avatarLink = avatarLink;
+    if (firstName) user.firstName = firstName;
+    if (lastName) user.lastName = lastName;
+    if (avatarLink !== undefined) user.avatarLink = avatarLink;
     await user.save();
+
+    const safeUser = user.toObject();
+    delete safeUser.password;
+    res.json(safeUser);
+  } catch (error) {
+    console.error("Error in profileUpdate:", error.message);
+    res.status(error.message === "No token" ? 401 : 500).json({ message: error.message || "Internal Server Error" });
   }
-  res.json(user);
 };
 
 export { profileController, profileUpdate };
