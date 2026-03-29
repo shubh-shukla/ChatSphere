@@ -2,17 +2,34 @@ import nodemailer from "nodemailer";
 
 const sendEmail = async (email, subject, verificationUrl) => {
   try {
+    const smtpHost = process.env.SMTP_HOST;
+    const smtpPort = process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 587;
+    const secure = process.env.SMTP_SECURE === "true" || smtpPort === 465;
+
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      service: process.env.SERVICE,
-      port: 587,
-      // secure: Boolean(process.env.SECURE),
+      host: smtpHost,
+      port: smtpPort,
+      secure,
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
+      tls: {
+        // allow self-signed certificates in some environments; set to true only for troubleshooting
+        rejectUnauthorized: process.env.SMTP_REJECT_UNAUTHORIZED !== "false",
+      },
     });
-    await transporter.sendMail({
+
+    // Verify SMTP connection configuration early and log result (helps debugging in prod)
+    try {
+      await transporter.verify();
+      console.log("SMTP transporter verified: host=%s port=%s secure=%s", smtpHost, smtpPort, secure);
+    } catch (verifyErr) {
+      console.error("SMTP transporter verification failed:", verifyErr);
+      // continue to attempt sendMail so detailed error appears in logs
+    }
+
+    const mailOptions = {
       from: `${process.env.EMAIL_FROM_NAME} <${process.env.SMTP_EMAIL}>`,
       to: email,
       subject: subject,
@@ -40,10 +57,20 @@ const sendEmail = async (email, subject, verificationUrl) => {
           </p>
         </div>
       </div>
-    `
-    });
+    `,
+    };
 
-    console.log(`Email sent to ${email}`);
+    // Send mail with timeout to avoid hanging in production
+    const sendPromise = transporter.sendMail(mailOptions);
+    const timeoutMs = process.env.SMTP_SEND_TIMEOUT_MS ? Number(process.env.SMTP_SEND_TIMEOUT_MS) : 15000;
+
+    const result = await Promise.race([
+      sendPromise,
+      new Promise((_, reject) => setTimeout(() => reject(new Error("SMTP sendMail timed out")), timeoutMs)),
+    ]);
+
+    console.log(`Email sent to ${email}: messageId=${result && result.messageId}`);
+    return result;
   } catch (error) {
     console.error(error);
     console.error(`Error sending mail to ${email}`);
