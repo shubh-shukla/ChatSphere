@@ -1,4 +1,3 @@
-// Contact.js
 import React from "react";
 import Avatar from "./Avatar";
 
@@ -10,30 +9,46 @@ const Contact = ({
   isOnline,
   avatarLink,
 }) => {
+  const isSelected = selectedUserId === userId;
+
   return (
     <li
       key={userId}
-      className={`${
-        selectedUserId === userId ? "bg-[#1d3072]" : ""
-      } capitalize py-2 lg:py-3 px-2 lg:px-5  rounded-[0.5rem]  border-gray-300 hover:bg-[#1d3072] flex flex-col lg:flex-row items-center gap-1 my-1.5 lg:gap-4 font-medium hover:cursor-pointer lg:my-3 text-white `}
-      onClick={() => {
-        setSelectedUserId(userId);
-      }}
+      className={`
+        relative flex items-center gap-3 px-3 py-3 rounded-lg cursor-pointer
+        transition-all duration-200 group
+        ${isSelected
+          ? "bg-primary/10 shadow-card"
+          : "hover:bg-surfaceLight"
+        }
+      `}
+      onClick={() => setSelectedUserId(userId)}
     >
+      {/* Selection indicator */}
+      {isSelected && (
+        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[2.5px] h-7 bg-primary rounded-r-sm" />
+      )}
+
       <Avatar
         userId={userId}
         username={username}
         isOnline={isOnline}
         avatarLink={avatarLink}
       />
-      <span className="text-xs lg:text-base text-center">{username}</span>
-      {isOnline && (
-        <span
-          className={`text-xs rounded-full bg-green-500 px-2 py-0.5  z-20 
-        }`}
-        >
-          Active
+      <div className="flex-1 min-w-0">
+        <span className={`block text-[13px] font-semibold capitalize truncate ${
+          isSelected ? "text-textPrimary" : "text-textSecondary group-hover:text-textPrimary"
+        } transition-colors`}>
+          {username}
         </span>
+        <span className={`text-[11px] font-medium ${isOnline ? "text-accent" : "text-textMuted/60"}`}>
+          {isOnline ? "Active now" : "Offline"}
+        </span>
+      </div>
+
+      {/* Active indicator dot for selected */}
+      {isSelected && (
+        <span className="w-2 h-2 rounded-full bg-primary flex-shrink-0 shadow-glow-sm" />
       )}
     </li>
   );

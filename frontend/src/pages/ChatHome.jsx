@@ -1,5 +1,4 @@
-// ChatHome.js
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useProfile } from "../context/profileContext";
 import axios from "axios";
 import ChatMessages from "../components/Chat/ChatMessages";
@@ -10,6 +9,7 @@ import TopBar from "../components/Chat/TopBar";
 import { socketUrl } from "../../apiConfig";
 import { useAuth } from "../context/authContext";
 import { useNavigate } from "react-router-dom";
+import { playNotificationSound } from "../utils/notificationSound";
 
 const ChatHome = () => {
   const [ws, setWs] = useState(null);
@@ -18,33 +18,85 @@ const ChatHome = () => {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const [loadingMessages, setLoadingMessages] = useState(false);
   const { userDetails } = useProfile();
   const { isAuthenticated, checkAuth } = useAuth();
   const navigate = useNavigate();
-  const connectToWebSocket = () => {
-    const ws = new WebSocket(socketUrl);
-    ws.addEventListener("message", handleMessage);
-    setWs(ws);
-  };
+  const typingTimeoutRef = useRef(null);
+  const selectedUserIdRef = useRef(null);
+  const wsRef = useRef(null);
+  const reconnectTimerRef = useRef(null);
+
+  // Keep ref in sync so WS handlers can read latest value
   useEffect(() => {
-    connectToWebSocket();
-    ws?.addEventListener("close", () => {
-      connectToWebSocket();
+    selectedUserIdRef.current = selectedUserId;
+    setIsTyping(false);
+  }, [selectedUserId]);
+
+  const showOnlinePeople = (peopleArray) => {
+    const people = {};
+    peopleArray.forEach(({ userId, username, avatarLink }) => {
+      // Skip entries without userId (unauthenticated connections)
+      if (!userId) return;
+      // Skip self
+      if (userId === userDetails?._id) return;
+      people[userId] = { username, avatarLink };
     });
-  }, [userDetails, selectedUserId]);
+    setOnlinePeople(people);
+  };
+
+  // Single WebSocket connection with proper lifecycle
+  useEffect(() => {
+    let disposed = false;
+
+    const connect = () => {
+      if (disposed) return;
+      const newWs = new WebSocket(socketUrl);
+
+      newWs.addEventListener("open", () => {
+        if (!disposed) {
+          wsRef.current = newWs;
+          setWs(newWs);
+        }
+      });
+
+      newWs.addEventListener("close", () => {
+        if (!disposed) {
+          wsRef.current = null;
+          setWs(null);
+          // Reconnect after delay
+          reconnectTimerRef.current = setTimeout(connect, 1000);
+        }
+      });
+    };
+
+    connect();
+
+    return () => {
+      disposed = true;
+      if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
+      if (wsRef.current) {
+        wsRef.current.close();
+        wsRef.current = null;
+      }
+    };
+  }, [userDetails]);
 
   useEffect(() => {
     const fetchData = async () => {
       if (selectedUserId) {
+        setLoadingMessages(true);
         try {
           const res = await axios.get(`/api/user/messages/${selectedUserId}`);
           setMessages(res.data);
         } catch (error) {
           console.error("Error fetching messages:", error);
+        } finally {
+          setLoadingMessages(false);
         }
       }
     };
-
     fetchData();
   }, [selectedUserId]);
 
@@ -56,7 +108,7 @@ const ChatHome = () => {
 
       const offlinePeopleWithAvatar = offlinePeopleArr.map((p) => ({
         ...p,
-        avatarLink: p.avatarLink, // assuming avatarLink is a property of p
+        avatarLink: p.avatarLink,
       }));
 
       setOfflinePeople(
@@ -69,57 +121,55 @@ const ChatHome = () => {
   }, [onlinePeople, userDetails]);
 
   useEffect(() => {
-    const handleRealTimeMessage = (event) => {
+    const handleWsMessage = (event) => {
       const messageData = JSON.parse(event.data);
 
+      // Online people list
+      if ("online" in messageData) {
+        showOnlinePeople(messageData.online);
+        return;
+      }
+
+      // Typing indicators
+      if ("typing" in messageData) {
+        if (messageData.sender === selectedUserIdRef.current) {
+          setIsTyping(messageData.typing);
+        }
+        return;
+      }
+
+      // Incoming text message
       if ("text" in messageData) {
-        setMessages((prev) => [...prev, { ...messageData }]);
+        if (messageData.sender === selectedUserIdRef.current) {
+          setMessages((prev) => [...prev, { ...messageData }]);
+        }
+        // Play sound for messages from others
+        if (messageData.sender !== userDetails?._id) {
+          playNotificationSound();
+        }
       }
     };
 
-    // Add event listener for real-time messages
     if (ws) {
-      ws.addEventListener("message", handleRealTimeMessage);
+      ws.addEventListener("message", handleWsMessage);
     }
 
     return () => {
-      // Remove the event listener when component unmounts
       if (ws) {
-        ws.removeEventListener("message", handleRealTimeMessage);
+        ws.removeEventListener("message", handleWsMessage);
       }
     };
-  }, [ws, selectedUserId]);
-
-  const showOnlinePeople = (peopleArray) => {
-    const people = {};
-    peopleArray.forEach(({ userId, username, avatarLink }) => {
-      if (userId !== userDetails?._id) {
-        people[userId] = {
-          username,
-          avatarLink, // include avatarLink for online users
-        };
-      }
-    });
-
-    setOnlinePeople(people);
-  };
-
-  const handleMessage = (ev) => {
-    const messageData = JSON.parse(ev.data);
-    if ("online" in messageData) {
-      showOnlinePeople(messageData.online);
-    } else if ("text" in messageData) {
-      if (messageData.sender === selectedUserId) {
-        setMessages((prev) => [...prev, { ...messageData }]);
-      }
-    }
-  };
+  }, [ws, userDetails]);
 
   const sendMessage = (ev) => {
     if (ev) ev.preventDefault();
-    console.log("sending message");
-    console.log(newMessage, selectedUserId);
-    ws.send(JSON.stringify({ text: newMessage, recipient: selectedUserId }));
+    if (!newMessage.trim() || !selectedUserId) return;
+    const activeWs = wsRef.current;
+    if (!activeWs || activeWs.readyState !== WebSocket.OPEN) return;
+    activeWs.send(JSON.stringify({ text: newMessage, recipient: selectedUserId }));
+    // Stop typing indicator
+    activeWs.send(JSON.stringify({ typing: false, recipient: selectedUserId }));
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     setNewMessage("");
     setMessages((prev) => [
       ...prev,
@@ -128,32 +178,42 @@ const ChatHome = () => {
         sender: userDetails._id,
         recipient: selectedUserId,
         _id: Date.now(),
+        createdAt: new Date().toISOString(),
       },
     ]);
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (selectedUserId) {
-        try {
-          const res = await axios.get(`/api/user/messages/${selectedUserId}`);
-          setMessages(res.data);
-        } catch (error) {
-          console.error("Error fetching messages:", error);
-        }
+  // Typing indicator: send typing event with debounce
+  const handleTyping = () => {
+    const activeWs = wsRef.current;
+    if (activeWs?.readyState === WebSocket.OPEN && selectedUserId) {
+      activeWs.send(JSON.stringify({ typing: true, recipient: selectedUserId }));
+    }
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    typingTimeoutRef.current = setTimeout(() => {
+      const ws2 = wsRef.current;
+      if (ws2?.readyState === WebSocket.OPEN && selectedUserId) {
+        ws2.send(JSON.stringify({ typing: false, recipient: selectedUserId }));
       }
-    };
+    }, 2000);
+  };
 
-    fetchData();
-  }, [selectedUserId]);
   useEffect(() => {
     checkAuth();
-    if (!isAuthenticated) {
-      navigate("/");
-    }
   }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/", { replace: true });
+    }
+  }, [isAuthenticated]);
+
   return (
-    <div className="flex min-h-screen  bg-background ">
+    <div className="flex h-screen bg-dark overflow-hidden relative">
+      {/* Decorative background orbs */}
+      <div className="orb w-96 h-96 bg-primary/30 -top-48 -right-48 fixed" />
+      <div className="orb w-72 h-72 bg-accent/20 bottom-0 left-1/3 fixed" />
+
       <Nav />
       <OnlineUsersList
         onlinePeople={onlinePeople}
@@ -161,26 +221,33 @@ const ChatHome = () => {
         setSelectedUserId={setSelectedUserId}
         offlinePeople={offlinePeople}
       />
-      <section className="w-[71%] lg:w-[62%] relative pb-10 bg-[#030c35]">
-        {selectedUserId && (
-          <TopBar
+      <section className="flex-1 flex flex-col bg-background relative overflow-hidden">
+        {/* Subtle chat background pattern */}
+        <div className="absolute inset-0 chat-pattern pointer-events-none" />
+
+        <div className="relative flex-1 flex flex-col z-10 min-h-0">
+          {selectedUserId && (
+            <TopBar
+              selectedUserId={selectedUserId}
+              setSelectedUserId={setSelectedUserId}
+              offlinePeople={offlinePeople}
+              onlinePeople={onlinePeople}
+              isTyping={isTyping}
+            />
+          )}
+          <ChatMessages
+            messages={messages}
+            userDetails={userDetails}
             selectedUserId={selectedUserId}
-            setSelectedUserId={setSelectedUserId}
-            offlinePeople={offlinePeople}
-            onlinePeople={onlinePeople}
+            isTyping={isTyping}
+            loadingMessages={loadingMessages}
           />
-        )}
-        <ChatMessages
-          messages={messages}
-          userDetails={userDetails}
-          selectedUserId={selectedUserId}
-        />
-        <div className="absolute w-full bottom-0 flex justify-center items-center">
           <MessageInputForm
             newMessage={newMessage}
             setNewMessage={setNewMessage}
             sendMessage={sendMessage}
             selectedUserId={selectedUserId}
+            onTyping={handleTyping}
           />
         </div>
       </section>
