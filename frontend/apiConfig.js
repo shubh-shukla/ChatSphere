@@ -2,9 +2,12 @@
 let baseUrl;
 let socketUrl;
 
-if (import.meta.env.VITE_NODE_ENV === "production") {
-  baseUrl = "https://chatsphere-server.vercel.app";
-  socketUrl = "wss://chatsphere-server.vercel.app";
+console.log("VITE_SERVER_HOST:", import.meta.env.VITE_SERVER_HOST);
+console.log("All env:", JSON.stringify(import.meta.env));
+
+if (import.meta.env.VITE_SERVER_HOST) {
+  baseUrl = `https://${import.meta.env.VITE_SERVER_HOST}`;
+  socketUrl = `wss://${import.meta.env.VITE_SERVER_HOST}`;
 } else {
   baseUrl = "http://localhost:4000";
   socketUrl = "ws://localhost:4000";
