@@ -9,18 +9,19 @@ const createWebSocketServer = (server) => {
   wss.on("connection", (connection, req) => {
     const notifyAboutOnlinePeople = async () => {
       const onlineUsers = await Promise.all(
-        Array.from(wss.clients).map(async (client) => {
-          const { userId, username } = client;
-          // Assuming you have a User model and it has an avatarLink field
-          const user = await User.findById(userId);
-          const avatarLink = user ? user.avatarLink : null;
+        Array.from(wss.clients)
+          .filter((client) => client.userId)
+          .map(async (client) => {
+            const { userId, username } = client;
+            const user = await User.findById(userId);
+            const avatarLink = user ? user.avatarLink : null;
 
-          return {
-            userId,
-            username,
-            avatarLink,
-          };
-        })
+            return {
+              userId,
+              username,
+              avatarLink,
+            };
+          })
       );
 
       [...wss.clients].forEach((client) => {
@@ -54,56 +55,75 @@ const createWebSocketServer = (server) => {
     if (cookies) {
       const tokenString = cookies
         .split(";")
+        .map((s) => s.trim())
         .find((str) => str.startsWith("authToken="));
 
       if (tokenString) {
         const token = tokenString.split("=")[1];
         jwt.verify(token, process.env.JWTPRIVATEKEY, {}, (err, userData) => {
-          if (err) console.log(err);
+          if (err) {
+            console.log("WS JWT verify error:", err.message);
+            return;
+          }
 
           const { _id, firstName, lastName } = userData;
           connection.userId = _id;
           connection.username = `${firstName} ${lastName}`;
 
-          // Log authenticated user information
-          // console.log(
-          //   "User Connected:",
-          //   connection.userId,
-          //   connection.username
-          // );
+          // Notify everyone now that this client is authenticated
+          notifyAboutOnlinePeople();
         });
       }
     }
 
     connection.on("message", async (message) => {
-      const messageData = JSON.parse(message.toString());
+      let messageData;
+      try {
+        messageData = JSON.parse(message.toString());
+      } catch (e) {
+        console.error("WS: malformed message:", e.message);
+        return;
+      }
       const { recipient, text } = messageData;
-      // console.log(recipient, text, file);
-      const msgDoc = await Message.create({
-        sender: connection.userId,
-        recipient,
-        text,
-      });
 
+      // Handle typing indicator events
+      if ('typing' in messageData) {
+        [...wss.clients].forEach((client) => {
+          if (client.userId === messageData.recipient) {
+            client.send(
+              JSON.stringify({
+                typing: messageData.typing,
+                sender: connection.userId,
+              })
+            );
+          }
+        });
+        return;
+      }
+
+      // Only save and relay if both recipient and text are present
       if (recipient && text) {
+        const msgDoc = await Message.create({
+          sender: connection.userId,
+          recipient,
+          text,
+        });
+
         [...wss.clients].forEach((client) => {
           if (client.userId === recipient) {
             client.send(
               JSON.stringify({
-                sender: connection.username,
+                sender: connection.userId,
                 text,
-                id: msgDoc._id,
+                _id: msgDoc._id,
+                createdAt: msgDoc.createdAt,
               })
             );
           }
         });
       }
     });
-    notifyAboutOnlinePeople();
-    // Sending online user list to all clients
-
-    // Log online users to the console
-    // console.log("Online Users:", onlineUsers);
+    // Only notify after auth sets userId — the notify call is now inside jwt.verify callback
   });
 };
 

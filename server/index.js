@@ -47,6 +47,12 @@ app.use(cors(corsOptions)); //for dev
 
 app.use("/api/user", userRoute);
 app.use("/api/avatar", avatarRoute);
+
+// Fallback: if a verification link hits the backend, redirect to frontend
+app.get("/users/:id/verify/:token", (req, res) => {
+  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+  res.redirect(`${frontendUrl}/users/${req.params.id}/verify/${req.params.token}`);
+});
 // console.log(process.env.SMTP_USER);
 // console.log(process.env.SMTP_PASS);
 const port = process.env.PORT || 8000;
