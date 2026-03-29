@@ -8,6 +8,6 @@
   "scripts": {
     "build": "cd server && npm install",
     "start": "cd server && node index.js",
-    "server": "cd server && nodemon index.js"
+    "server": "cd server && npm start"
   }
 }
