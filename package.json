@@ -1,0 +1,12 @@
+{
+  "name": "chatsphere",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": "20.x"
+  },
+  "scripts": {
+    "build": "cd server && npm install",
+    "start": "cd server && node index.js"
+  }
+}
