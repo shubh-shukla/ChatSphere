@@ -42,10 +42,17 @@ const registerController = async (req, res) => {
     }).save();
 
     const url = `${process.env.BASE_URL}/users/${user._id}/verify/${token.token}`;
-    await sendEmail(user.email, "Verify Email", url);
+    
+    // Send email without blocking the response
+    sendEmail(user.email, "Verify Email", url)
+      .then(async () => {
+        user.verificationLinkSent = true;
+        await user.save();
+      })
+      .catch((err) => {
+        console.error("Failed to send verification email:", err);
+      });
 
-    user.verificationLinkSent = true;
-    await user.save();
     res
       .status(201)
       .send({ message: `Verification Email Sent to ${user.email}` });
