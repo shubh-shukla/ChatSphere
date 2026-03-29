@@ -41,9 +41,6 @@ const loginController = async (req, res) => {
       secure: isProduction,
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     };
-    if (isProduction) {
-      cookieOptions.domain = 'my-chatsphere.vercel.app';
-    }
     res
       .status(200)
       .cookie("authToken", token, cookieOptions)
