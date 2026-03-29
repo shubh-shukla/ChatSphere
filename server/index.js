@@ -43,6 +43,10 @@ const corsOptions = {
 app.use(cors(corsOptions)); //for dev
 // app.use(cors());	//for production
 
+app.get("/", (req, res) => {
+  res.send("ChatSphere API is running");
+});
+
 app.use("/api/user", userRoute);
 app.use("/api/avatar", avatarRoute);
 

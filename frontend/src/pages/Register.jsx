@@ -229,6 +229,7 @@ const Register = () => {
                   type="password"
                   name="password"
                   id="password"
+                  autoComplete="new-password"
                   placeholder="Create a strong password"
                   className="w-full pl-12 pr-4 py-3 bg-surface border border-border rounded-xl text-textPrimary placeholder-textMuted text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all input-glow"
                   required
